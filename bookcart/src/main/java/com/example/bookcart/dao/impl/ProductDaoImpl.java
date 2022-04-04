@@ -1,6 +1,8 @@
 package com.example.bookcart.dao.impl;
 
+import com.example.bookcart.constant.ProductCategory;
 import com.example.bookcart.dao.ProductDao;
+import com.example.bookcart.dto.ProductQueryParams;
 import com.example.bookcart.dto.ProductRequest;
 import com.example.bookcart.model.Product;
 import com.example.bookcart.rowmapper.ProductRowMapper;
@@ -20,6 +22,24 @@ import java.util.Map;
 public class ProductDaoImpl implements ProductDao {
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Override
+    public List<Product> getProducts(ProductQueryParams productQueryParams) {
+        String sql = "SELECT * FROM product where 1=1";
+        Map<String,Object> map = new HashMap<>();
+        if (productQueryParams.getCategory() != null) {
+            sql += " AND category = :category";
+            map.put("category",productQueryParams.getCategory().name());
+        }
+        if (productQueryParams.getSearch() != null) {
+            sql += " AND product_name Like :search";
+            map.put("search","%" +  productQueryParams.getSearch() + "%");
+        }
+        sql += " ORDER BY :orderBy :sort";
+        map.put("orderBy", productQueryParams.getOrderBy());
+        map.put("sort", productQueryParams.getSort());
+        return namedParameterJdbcTemplate.query(sql, map,new ProductRowMapper());
+    }
 
     @Override
     public Product getProductById(Integer productId) {

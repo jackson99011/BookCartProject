@@ -1,16 +1,25 @@
 package com.example.bookcart.service.impl;
 
+import com.example.bookcart.constant.ProductCategory;
 import com.example.bookcart.dao.ProductDao;
+import com.example.bookcart.dto.ProductQueryParams;
 import com.example.bookcart.dto.ProductRequest;
 import com.example.bookcart.model.Product;
 import com.example.bookcart.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductDao productDao;
+
+    @Override
+    public List<Product> getProducts(ProductQueryParams productQueryParams) {
+        return productDao.getProducts(productQueryParams);
+    }
 
     @Override
     public Product getProductById(Integer productId) {
