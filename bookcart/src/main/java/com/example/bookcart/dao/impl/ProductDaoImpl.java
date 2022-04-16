@@ -23,10 +23,8 @@ public class ProductDaoImpl implements ProductDao {
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    @Override
-    public Integer countProduct(ProductQueryParams productQueryParams) {
-        String sql = "SELECT count(*) FROM product where 1=1";
-        Map<String,Object> map = new HashMap<>();
+    private String addFilteringSql(String sql,Map<String,Object> map,ProductQueryParams productQueryParams)
+    {
         if (productQueryParams.getCategory() != null) {
             sql += " AND category = :category";
             map.put("category",productQueryParams.getCategory().name());
@@ -35,6 +33,14 @@ public class ProductDaoImpl implements ProductDao {
             sql += " AND product_name Like :search";
             map.put("search","%" +  productQueryParams.getSearch() + "%");
         }
+        return sql;
+    }
+
+    @Override
+    public Integer countProduct(ProductQueryParams productQueryParams) {
+        String sql = "SELECT count(*) FROM product where 1=1";
+        Map<String,Object> map = new HashMap<>();
+        sql = addFilteringSql(sql,map,productQueryParams);
         return namedParameterJdbcTemplate.queryForObject(sql, map,Integer.class);
     }
 
@@ -42,14 +48,7 @@ public class ProductDaoImpl implements ProductDao {
     public List<Product> getProducts(ProductQueryParams productQueryParams) {
         String sql = "SELECT * FROM product where 1=1";
         Map<String,Object> map = new HashMap<>();
-        if (productQueryParams.getCategory() != null) {
-            sql += " AND category = :category";
-            map.put("category",productQueryParams.getCategory().name());
-        }
-        if (productQueryParams.getSearch() != null) {
-            sql += " AND product_name Like :search";
-            map.put("search","%" +  productQueryParams.getSearch() + "%");
-        }
+        sql = addFilteringSql(sql,map,productQueryParams);
         //排序
         sql += " ORDER BY :orderBy :sort";
         map.put("orderBy", productQueryParams.getOrderBy());
