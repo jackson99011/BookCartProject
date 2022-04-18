@@ -40,7 +40,8 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
+            <version>2.1.210</version>
+            <scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
@@ -84,7 +85,15 @@
 					</excludes>
 				</configuration>
 			</plugin>
-		</plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>17</source>
+                    <target>17</target>
+                </configuration>
+            </plugin>
+        </plugins>
 	</build>
 
 </project>
