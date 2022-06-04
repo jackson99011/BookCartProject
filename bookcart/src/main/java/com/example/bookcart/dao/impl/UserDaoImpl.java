@@ -14,10 +14,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class UserDaoImpl implements UserDao {
@@ -32,6 +29,18 @@ public class UserDaoImpl implements UserDao {
     @Override
     public List<User> getUsers(User user) {
         return null;
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        String sql = "SELECT * FROM user where email = :email";
+        Map<String,Object> map = new HashMap<>();
+        map.put("email",email);
+        List<User> userList = namedParameterJdbcTemplate.query(sql, map, new UserRowMapper());
+        if (userList.size() > 0)
+            return  userList.get(0);
+        else
+            return null;
     }
 
     @Override
@@ -63,8 +72,7 @@ public class UserDaoImpl implements UserDao {
 
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
 
-        int userId = keyHolder.getKey().intValue();
-        return userId;
+        return Objects.requireNonNull(keyHolder.getKey()).intValue();
     }
 
     @Override

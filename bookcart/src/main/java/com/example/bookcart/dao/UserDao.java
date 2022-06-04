@@ -9,6 +9,7 @@ import java.util.List;
 public interface UserDao {
     Integer countUser(User user);
     List<User> getUsers(User user);
+    User getUserByEmail(String email);
     User getUserById(Integer userId);
     Integer createUser(UserRegisterRequest userRegisterRequest);
     void updateUser(Integer UserId,User user);
