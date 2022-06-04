@@ -7,6 +7,8 @@ import com.example.bookcart.dto.UserRegisterRequest;
 import com.example.bookcart.model.Product;
 import com.example.bookcart.model.User;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public interface UserService {
