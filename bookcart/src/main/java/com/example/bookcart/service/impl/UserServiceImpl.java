@@ -4,6 +4,7 @@ import com.example.bookcart.dao.ProductDao;
 import com.example.bookcart.dao.UserDao;
 import com.example.bookcart.dto.ProductQueryParams;
 import com.example.bookcart.dto.ProductRequest;
+import com.example.bookcart.dto.UserLoginRequest;
 import com.example.bookcart.dto.UserRegisterRequest;
 import com.example.bookcart.model.Product;
 import com.example.bookcart.model.User;
@@ -38,5 +39,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(Integer userId) {
         return userDao.getUserById(userId);
+    }
+
+    @Override
+    public User login(UserLoginRequest userLoginRequest) {
+        User user = userDao.getUserByEmail(userLoginRequest.getEmail());
+        if (user == null)
+        {
+            log.warn("該 email {} 尚未註冊",userLoginRequest.getEmail());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
+        if (user.getPassword().equals(userLoginRequest.getPassword()))
+        {
+            return user;
+        }
+        else
+        {
+            log.warn("該 email {} 密碼不正確",userLoginRequest.getEmail());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
     }
 }
