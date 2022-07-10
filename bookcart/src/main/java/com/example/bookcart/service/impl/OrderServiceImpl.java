@@ -11,7 +11,6 @@ import com.example.bookcart.model.OrderItem;
 import com.example.bookcart.model.Product;
 import com.example.bookcart.model.User;
 import com.example.bookcart.service.OrderService;
-import org.aspectj.weaver.ast.Or;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +45,7 @@ public class OrderServiceImpl implements OrderService {
 
         List<OrderItem> orderItemList = new ArrayList<>();
 
-        for (BuyItem buyItem : createOrderRequest.getBuyItemsList())
+        for (BuyItem buyItem : createOrderRequest.getBuyItemList())
         {
             Product product = productDao.getProductById(buyItem.getProductId());
             //檢查product是否存在、庫存是否存在
