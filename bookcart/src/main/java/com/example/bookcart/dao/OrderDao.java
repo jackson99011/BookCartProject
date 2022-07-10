@@ -1,5 +1,6 @@
 package com.example.bookcart.dao;
 
+import com.example.bookcart.dto.OrderQueryParams;
 import com.example.bookcart.model.Order;
 import com.example.bookcart.model.OrderItem;
 
@@ -10,4 +11,6 @@ public interface OrderDao {
     Order getOrderById(Integer orderId);
     Integer createOrder(Integer userId,Integer totalAmount);
     void createOrderItem(Integer orderId, List<OrderItem> orderItemList);
+    Integer countOrder(OrderQueryParams orderQueryParams);
+    List<Order> getOrders(OrderQueryParams orderQueryParams);
 }

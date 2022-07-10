@@ -1,10 +1,12 @@
 package com.example.bookcart.dao.impl;
 
 import com.example.bookcart.dao.OrderDao;
+import com.example.bookcart.dto.OrderQueryParams;
 import com.example.bookcart.model.Order;
 import com.example.bookcart.model.OrderItem;
 import com.example.bookcart.rowmapper.OrderItemRowMapper;
 import com.example.bookcart.rowmapper.OrderRowMapper;
+import com.example.bookcart.rowmapper.ProductRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -22,6 +24,14 @@ import java.util.Map;
 public class OrderDaoImpl implements OrderDao {
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    private String addFilteringSql(String sql, Map<String, Object> map, OrderQueryParams orderQueryParams) {
+        if (orderQueryParams.getUserId() != null) {
+            sql = sql + " AND user_id = :userId";
+            map.put("userId", orderQueryParams.getUserId());
+        }
+        return sql;
+    }
 
     @Override
     public List<OrderItem> getOrderItemsByOrderId(Integer orderId) {
@@ -76,7 +86,7 @@ public class OrderDaoImpl implements OrderDao {
     public void createOrderItem(Integer orderId, List<OrderItem> orderItemList) {
 
         String sql = "INSERT INTO order_item(order_id,product_id,quantity,amount)" +
-                "VALUES (:orderId, :productId, :quantity, :amount)";
+                " VALUES (:orderId, :productId, :quantity, :amount)";
         //batchUpdate
         MapSqlParameterSource[] parameterSources = new MapSqlParameterSource[orderItemList.size()];
 
@@ -91,6 +101,30 @@ public class OrderDaoImpl implements OrderDao {
         }
 
         namedParameterJdbcTemplate.batchUpdate(sql, parameterSources);
+    }
+
+    @Override
+    public Integer countOrder(OrderQueryParams orderQueryParams) {
+        String sql = "SELECT count(*) FROM `order` where 1=1";
+        Map<String,Object> map = new HashMap<>();
+        sql = addFilteringSql(sql,map,orderQueryParams);
+        return namedParameterJdbcTemplate.queryForObject(sql, map,Integer.class);
+    }
+
+    @Override
+    public List<Order> getOrders(OrderQueryParams orderQueryParams) {
+        String sql = "SELECT order_id, user_id, total_amount, created_date, last_modified_date FROM `order` WHERE 1=1";
+        Map<String,Object> map = new HashMap<>();
+        //查詢條件
+        sql = addFilteringSql(sql,map,orderQueryParams);
+        //排序
+        sql += " ORDER BY created_date DESC";
+        //分頁條件
+        sql += " LIMIT :limit OFFSET :offset";
+        map.put("limit", orderQueryParams.getLimit());
+        map.put("offset", orderQueryParams.getOffset());
+
+        return namedParameterJdbcTemplate.query(sql, map,new OrderRowMapper());
     }
 
 }
