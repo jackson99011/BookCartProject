@@ -4,6 +4,7 @@ import com.example.bookcart.dao.OrderDao;
 import com.example.bookcart.dao.ProductDao;
 import com.example.bookcart.dto.BuyItem;
 import com.example.bookcart.dto.CreateOrderRequest;
+import com.example.bookcart.model.Order;
 import com.example.bookcart.model.OrderItem;
 import com.example.bookcart.model.Product;
 import com.example.bookcart.service.OrderService;
@@ -49,5 +50,16 @@ public class OrderServiceImpl implements OrderService {
         orderDao.createOrderItem(orderId, orderItemList);
 
         return orderId;
+    }
+
+    @Override
+    public Order getOrderById(Integer orderId) {
+        Order order = orderDao.getOrderById(orderId);
+
+        List<OrderItem> orderItemList = orderDao.getOrderItemsByOrderId(orderId);
+
+        order.setOrderItemList(orderItemList);
+
+        return order;
     }
 }
